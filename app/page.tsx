@@ -121,11 +121,11 @@ export default function HomePage() {
               </div>
               {(c.phone || c.email) && <div className="cl-sub">{[c.phone, c.email].filter(Boolean).join(" · ")}</div>}
               {clientReports.length > 0 && (
-                <div className="cl-sub">
-                  דוחות קיימים:{" "}
-                  {clientReports.map((r, i) => (
-                    <a key={r.id} href={`/mortgage-reports/${r.id}`} style={{ marginInlineEnd: 8 }}>
-                      {r.reportDate ?? `#${r.id}`}{i < clientReports.length - 1 ? "," : ""}
+                <div className="report-list">
+                  <span className="label">דוחות קיימים:</span>
+                  {clientReports.map((r) => (
+                    <a key={r.id} className="report-chip" href={`/mortgage-reports/${r.id}`}>
+                      {r.reportDate ?? `#${r.id}`}
                     </a>
                   ))}
                 </div>
