@@ -22,6 +22,7 @@ export default async function MortgageReportPage({
 
   return (
     <MortgageReportView
+      reportId={row.id}
       data={row.mortgageData as MortgageData}
       clientDisplayName={row.clientName ?? "לקוח"}
       reportDate={row.reportDate}

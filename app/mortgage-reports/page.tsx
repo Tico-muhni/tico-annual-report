@@ -39,11 +39,13 @@ export default function MortgageReportsPage() {
 function MortgageReportsForm() {
   const router = useRouter();
   const searchParams = useSearchParams();
+  const editId = searchParams.get("editId");
   const [clientList, setClientList] = useState<ClientRow[]>([]);
   const [clientId, setCaseId] = useState<string>(searchParams.get("clientId") ?? "");
   const [data, setData] = useState<MortgageData>(EMPTY_DATA);
   const [saving, setSaving] = useState(false);
   const [message, setMessage] = useState<string | null>(null);
+  const [loadingEdit, setLoadingEdit] = useState(!!editId);
 
   useEffect(() => {
     fetch("/api/clients")
@@ -51,6 +53,20 @@ function MortgageReportsForm() {
       .then((rows: ClientRow[]) => setClientList(rows))
       .catch(() => setClientList([]));
   }, []);
+
+  useEffect(() => {
+    if (!editId) return;
+    fetch(`/api/mortgage-reports/${editId}`)
+      .then((r) => r.json())
+      .then((row) => {
+        if (row?.mortgageData) {
+          setData(row.mortgageData as MortgageData);
+          setCaseId(String(row.clientId));
+        }
+      })
+      .catch(() => setMessage("לא ניתן לטעון את הדוח לעריכה"))
+      .finally(() => setLoadingEdit(false));
+  }, [editId]);
 
   function updateTrack(i: number, patch: Partial<MortgageTrack>) {
     setData((d) => ({
@@ -79,8 +95,8 @@ function MortgageReportsForm() {
     }
     setSaving(true);
     try {
-      const res = await fetch("/api/mortgage-reports", {
-        method: "POST",
+      const res = await fetch(editId ? `/api/mortgage-reports/${editId}` : "/api/mortgage-reports", {
+        method: editId ? "PATCH" : "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ clientId: Number(clientId), mortgageData: data }),
       });
@@ -97,11 +113,19 @@ function MortgageReportsForm() {
     }
   }
 
+  if (loadingEdit) {
+    return (
+      <div className="wrap">
+        <p className="log-empty">טוען דוח לעריכה...</p>
+      </div>
+    );
+  }
+
   return (
     <div className="wrap">
       <div className="masthead">
         <div>
-          <h1>דוח משכנתה — הזנת נתונים</h1>
+          <h1>{editId ? "עריכת דוח משכנתה" : "דוח משכנתה — הזנת נתונים"}</h1>
           <p className="sub">קרא ל-Claude את ה-PDF-ים של הלקוח, ותעתיק לכאן את הנתונים</p>
         </div>
       </div>
@@ -286,7 +310,7 @@ function MortgageReportsForm() {
       <div className="deal-form" style={{ marginTop: 22 }}>
         <div className="actions">
           <button type="button" className="btn" disabled={saving} onClick={handleSubmit}>
-            {saving ? "שומר..." : "שמור דוח משכנתה"}
+            {saving ? "שומר..." : editId ? "שמור שינויים" : "שמור דוח משכנתה"}
           </button>
         </div>
       </div>

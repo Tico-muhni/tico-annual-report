@@ -35,10 +35,12 @@ function sum(tracks: MortgageTrack[], key: keyof MortgageTrack): number | null {
 }
 
 export default function MortgageReportView({
+  reportId,
   data,
   clientDisplayName,
   reportDate,
 }: {
+  reportId: number;
   data: MortgageData;
   clientDisplayName: string;
   reportDate: string | null;
@@ -76,6 +78,7 @@ export default function MortgageReportView({
   return (
     <div className={styles.doc}>
       <div className={styles.actions + " " + styles.noPrint}>
+        <a className="btn ghost" href={`/mortgage-reports?editId=${reportId}`}>עריכה</a>
         <button className="btn ghost" onClick={() => window.print()}>הפק PDF (הדפסה)</button>
       </div>
 
