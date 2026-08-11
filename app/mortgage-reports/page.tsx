@@ -401,7 +401,17 @@ function MortgageReportsForm() {
             </div>
             <div className="row">
               <span className="k">הפרש לעומת המצב הנוכחי</span>
-              <input type="text" inputMode="decimal" value={s.savingsVsCurrent ?? ""} onChange={(e) => updateScenario(i, { savingsVsCurrent: numOrNull(e.target.value) })} />
+              <span style={{ display: "flex", gap: 6, alignItems: "center" }}>
+                <button
+                  type="button"
+                  className="edit"
+                  title="החלף סימן"
+                  onClick={() => updateScenario(i, { savingsVsCurrent: s.savingsVsCurrent == null ? null : -s.savingsVsCurrent })}
+                >
+                  ±
+                </button>
+                <input type="text" inputMode="decimal" value={s.savingsVsCurrent ?? ""} onChange={(e) => updateScenario(i, { savingsVsCurrent: numOrNull(e.target.value) })} />
+              </span>
             </div>
           </div>
         ))}
