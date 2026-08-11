@@ -12,6 +12,11 @@ const heebo = Heebo({
 export const metadata: Metadata = {
   title: "דוח שנתי — TICO FINANCE",
   description: "דוחות משכנתה שנתיים ללקוחות — TICO FINANCE",
+  appleWebApp: {
+    capable: true,
+    statusBarStyle: "black-translucent",
+    title: "דוח שנתי",
+  },
   robots: { index: false, follow: false },
 };
 
