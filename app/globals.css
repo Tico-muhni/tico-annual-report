@@ -127,6 +127,8 @@ input, select{font-family:inherit; color:inherit;}
   text-align:center; border-radius:var(--radius-pill);
 }
 .qa-btn:hover{border-color:var(--green); color:var(--green-dark); transform:translateY(-1px);}
+.qa-btn.primary{background:var(--green); color:#fff; border-color:var(--green);}
+.qa-btn.primary:hover{background:var(--green-dark); border-color:var(--green-dark); color:#fff;}
 .qa-btn .plus{font-weight:400; opacity:.7; margin-inline-start:4px;}
 
 .deal-form{

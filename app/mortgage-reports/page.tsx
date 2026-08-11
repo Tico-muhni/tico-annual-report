@@ -8,6 +8,8 @@ import { EMPTY_SCENARIO, EMPTY_TRACK } from "@/lib/mortgage-types";
 
 const EMPTY_COMPARISON: MortgageComparison = { asOfDate: null, scenarios: [], note: null };
 
+const STANDARD_SCENARIO_LABELS = ["המשכנתה הנוכחית", "משכנתה חדשה, היום", "מיחזור אפשרי"];
+
 const EMPTY_DATA: MortgageData = {
   clientName: "",
   idNumber: null,
@@ -98,6 +100,16 @@ function MortgageReportsForm() {
 
   function addScenario() {
     setComparison((c) => ({ ...c, scenarios: [...c.scenarios, { ...EMPTY_SCENARIO }] }));
+  }
+
+  function addStandardScenarios() {
+    setComparison((c) => ({
+      ...c,
+      scenarios: [
+        ...c.scenarios,
+        ...STANDARD_SCENARIO_LABELS.map((label) => ({ ...EMPTY_SCENARIO, label })),
+      ],
+    }));
   }
 
   function removeScenario(i: number) {
@@ -396,7 +408,12 @@ function MortgageReportsForm() {
       </div>
 
       <div className="quickadd" style={{ marginTop: 14 }}>
-        <button type="button" className="qa-btn" onClick={addScenario}>הוסף תרחיש <span className="plus">+</span></button>
+        {comparison.scenarios.length === 0 && (
+          <button type="button" className="qa-btn primary" onClick={addStandardScenarios}>
+            הוסף השוואה (נוכחית / חדשה היום / מיחזור) <span className="plus">+</span>
+          </button>
+        )}
+        <button type="button" className="qa-btn" onClick={addScenario}>הוסף תרחיש בודד <span className="plus">+</span></button>
       </div>
 
       <div className="deal-form" style={{ marginTop: 22 }}>
