@@ -1,6 +1,6 @@
 "use client";
 
-import type { MortgageData, MortgageTrack } from "@/lib/mortgage-types";
+import type { MortgageComparison, MortgageData, MortgageTrack } from "@/lib/mortgage-types";
 import styles from "./report.module.css";
 
 function parseDMY(s: string | null | undefined): Date | null {
@@ -37,11 +37,13 @@ function sum(tracks: MortgageTrack[], key: keyof MortgageTrack): number | null {
 export default function MortgageReportView({
   reportId,
   data,
+  comparison,
   clientDisplayName,
   reportDate,
 }: {
   reportId: number;
   data: MortgageData;
+  comparison: MortgageComparison | null;
   clientDisplayName: string;
   reportDate: string | null;
 }) {
@@ -260,6 +262,79 @@ export default function MortgageReportView({
               </div>
             ))}
           </div>
+        </section>
+      )}
+
+      {comparison && comparison.scenarios.length > 0 && (
+        <section className={styles.section}>
+          <div className={styles.sectionHead}>
+            <h2>המשכנתה שלכם מול האפשרויות בשוק היום</h2>
+            <div className={styles.sectionNote}>
+              {comparison.asOfDate ? `נכון ל-${comparison.asOfDate}` : "השוואה בלבד, לצורך התייחסות בשיחה"}
+            </div>
+          </div>
+          <div className={styles.tableWrap}>
+            <table className={styles.mtable}>
+              <thead>
+                <tr>
+                  <th>נתון</th>
+                  {comparison.scenarios.map((s, i) => (
+                    <th className={styles.num} key={i}>{s.label || `תרחיש ${i + 1}`}</th>
+                  ))}
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td className={styles.trackName}>החזר ראשון</td>
+                  {comparison.scenarios.map((s, i) => (
+                    <td className={styles.num} key={i}>{fmtMoney(s.firstPayment)}</td>
+                  ))}
+                </tr>
+                <tr>
+                  <td className={styles.trackName}>תשלומי ריבית והצמדה, סה&quot;כ</td>
+                  {comparison.scenarios.map((s, i) => (
+                    <td className={styles.num} key={i}>{fmtMoney(s.totalInterestAndLinkage)}</td>
+                  ))}
+                </tr>
+                <tr>
+                  <td className={styles.trackName}>עלות כוללת לתקופה</td>
+                  {comparison.scenarios.map((s, i) => (
+                    <td className={styles.num} key={i}>{fmtMoney(s.totalCost)}</td>
+                  ))}
+                </tr>
+                <tr>
+                  <td className={styles.trackName}>שיעור תשואה פנימי (שת&quot;פ)</td>
+                  {comparison.scenarios.map((s, i) => (
+                    <td className={styles.num} key={i}>{fmtPct(s.irr)}</td>
+                  ))}
+                </tr>
+                <tr>
+                  <td className={styles.trackName}>הפרש לעומת המצב הנוכחי</td>
+                  {comparison.scenarios.map((s, i) => {
+                    if (s.savingsVsCurrent == null) {
+                      return <td className={styles.num} key={i}><span className={`${styles.delta} ${styles.deltaFlat}`}>—</span></td>;
+                    }
+                    if (s.savingsVsCurrent === 0) {
+                      return <td className={styles.num} key={i}><span className={`${styles.delta} ${styles.deltaFlat}`}>—</span></td>;
+                    }
+                    const cls = s.savingsVsCurrent > 0 ? styles.deltaPos : styles.deltaNeg;
+                    const sign = s.savingsVsCurrent > 0 ? "+" : "";
+                    return (
+                      <td className={styles.num} key={i}>
+                        <span className={`${styles.delta} ${cls}`}>{sign}{fmtMoney(s.savingsVsCurrent)}</span>
+                      </td>
+                    );
+                  })}
+                </tr>
+              </tbody>
+            </table>
+          </div>
+          {comparison.note && (
+            <p style={{ fontSize: 13.5, color: "var(--green-dark)", fontWeight: 600, marginTop: 10 }}>{comparison.note}</p>
+          )}
+          <p style={{ fontSize: 13, color: "var(--ink-faint)", marginTop: 8 }}>
+            הנתונים הם הדמיה בלבד ואינם מהווים הצעה מחייבת. נשמח לעבור עליהם יחד ולהסביר מה עומד מאחורי כל תרחיש.
+          </p>
         </section>
       )}
 

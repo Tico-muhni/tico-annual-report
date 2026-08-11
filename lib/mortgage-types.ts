@@ -34,6 +34,34 @@ export interface MortgageData {
   tracks: MortgageTrack[];
 }
 
+// One column in a "מצב נוכחי / משכנתה חדשה היום / מיחזור אפשרי" comparison
+// table, e.g. from a SMARTNPV-style תמהילים report. Aggregate-level only —
+// deliberately doesn't break down which tracks would change, so the report
+// doesn't hand the client a DIY refinancing recipe.
+export interface ComparisonScenario {
+  label: string; // e.g. "המשכנתה הנוכחית", "משכנתה חדשה, היום", "מיחזור אפשרי"
+  firstPayment: number | null; // החזר ראשון
+  totalInterestAndLinkage: number | null; // תשלומי ריבית והצמדה, סה"כ
+  totalCost: number | null; // עלות כוללת לתקופה
+  irr: number | null; // שיעור תשואה פנימי (שת"פ), %
+  savingsVsCurrent: number | null; // הפרש/חיסכון לעומת המצב הנוכחי, בש"ח
+}
+
+export interface MortgageComparison {
+  asOfDate: string | null; // תאריך הדוח שהושוו לפיו
+  scenarios: ComparisonScenario[];
+  note: string | null; // הערה רכה, למשל על חלופת מיחזור עם חשיפה מופחתת למדד
+}
+
+export const EMPTY_SCENARIO: ComparisonScenario = {
+  label: "",
+  firstPayment: null,
+  totalInterestAndLinkage: null,
+  totalCost: null,
+  irr: null,
+  savingsVsCurrent: null,
+};
+
 export const EMPTY_TRACK: MortgageTrack = {
   loanNumber: "",
   trackName: "",

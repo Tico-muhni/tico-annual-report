@@ -2,7 +2,7 @@ import { notFound } from "next/navigation";
 import { eq } from "drizzle-orm";
 import { getDb } from "@/lib/db";
 import { mortgageReports } from "@/lib/schema";
-import type { MortgageData } from "@/lib/mortgage-types";
+import type { MortgageComparison, MortgageData } from "@/lib/mortgage-types";
 import MortgageReportView from "./MortgageReportView";
 
 export const dynamic = "force-dynamic";
@@ -24,6 +24,7 @@ export default async function MortgageReportPage({
     <MortgageReportView
       reportId={row.id}
       data={row.mortgageData as MortgageData}
+      comparison={row.comparisonData as MortgageComparison | null}
       clientDisplayName={row.clientName ?? "לקוח"}
       reportDate={row.reportDate}
     />

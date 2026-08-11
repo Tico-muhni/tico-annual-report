@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { desc, eq } from "drizzle-orm";
 import { getDb } from "@/lib/db";
 import { clients, mortgageReports } from "@/lib/schema";
-import type { MortgageData } from "@/lib/mortgage-types";
+import type { MortgageComparison, MortgageData } from "@/lib/mortgage-types";
 
 export async function GET(req: NextRequest) {
   const clientIdParam = req.nextUrl.searchParams.get("clientId");
@@ -31,6 +31,7 @@ export async function POST(req: NextRequest) {
 
   const clientId = Number(body.clientId);
   const mortgageData = body.mortgageData as MortgageData | undefined;
+  const comparisonData = (body.comparisonData ?? null) as MortgageComparison | null;
 
   if (!Number.isInteger(clientId)) {
     return NextResponse.json({ error: "מזהה לקוח לא תקין" }, { status: 400 });
@@ -54,6 +55,7 @@ export async function POST(req: NextRequest) {
       accountNumber: mortgageData.accountNumber,
       reportDate: mortgageData.payoffDate ?? mortgageData.approvedDate,
       mortgageData,
+      comparisonData,
     })
     .returning();
 

@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { eq } from "drizzle-orm";
 import { getDb } from "@/lib/db";
 import { mortgageReports } from "@/lib/schema";
-import type { MortgageData } from "@/lib/mortgage-types";
+import type { MortgageComparison, MortgageData } from "@/lib/mortgage-types";
 
 export async function GET(
   _req: NextRequest,
@@ -33,6 +33,7 @@ export async function PATCH(
 
   const body = await req.json().catch(() => null);
   const mortgageData = body?.mortgageData as MortgageData | undefined;
+  const comparisonData = (body?.comparisonData ?? null) as MortgageComparison | null;
   if (!mortgageData || !mortgageData.clientName || !Array.isArray(mortgageData.tracks)) {
     return NextResponse.json({ error: "נתוני משכנתה חסרים או לא תקינים" }, { status: 400 });
   }
@@ -51,6 +52,7 @@ export async function PATCH(
       accountNumber: mortgageData.accountNumber,
       reportDate: mortgageData.payoffDate ?? mortgageData.approvedDate,
       mortgageData,
+      comparisonData,
       updatedAt: new Date(),
     })
     .where(eq(mortgageReports.id, idNum))

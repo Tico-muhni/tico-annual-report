@@ -3,8 +3,10 @@
 import { Suspense, useEffect, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import type { ClientRow } from "@/lib/schema";
-import type { MortgageData, MortgageTrack } from "@/lib/mortgage-types";
-import { EMPTY_TRACK } from "@/lib/mortgage-types";
+import type { ComparisonScenario, MortgageComparison, MortgageData, MortgageTrack } from "@/lib/mortgage-types";
+import { EMPTY_SCENARIO, EMPTY_TRACK } from "@/lib/mortgage-types";
+
+const EMPTY_COMPARISON: MortgageComparison = { asOfDate: null, scenarios: [], note: null };
 
 const EMPTY_DATA: MortgageData = {
   clientName: "",
@@ -43,6 +45,7 @@ function MortgageReportsForm() {
   const [clientList, setClientList] = useState<ClientRow[]>([]);
   const [clientId, setCaseId] = useState<string>(searchParams.get("clientId") ?? "");
   const [data, setData] = useState<MortgageData>(EMPTY_DATA);
+  const [comparison, setComparison] = useState<MortgageComparison>(EMPTY_COMPARISON);
   const [saving, setSaving] = useState(false);
   const [message, setMessage] = useState<string | null>(null);
   const [loadingEdit, setLoadingEdit] = useState(!!editId);
@@ -62,6 +65,9 @@ function MortgageReportsForm() {
         if (row?.mortgageData) {
           setData(row.mortgageData as MortgageData);
           setCaseId(String(row.clientId));
+        }
+        if (row?.comparisonData) {
+          setComparison(row.comparisonData as MortgageComparison);
         }
       })
       .catch(() => setMessage("לא ניתן לטעון את הדוח לעריכה"))
@@ -83,6 +89,21 @@ function MortgageReportsForm() {
     setData((d) => ({ ...d, tracks: d.tracks.filter((_, idx) => idx !== i) }));
   }
 
+  function updateScenario(i: number, patch: Partial<ComparisonScenario>) {
+    setComparison((c) => ({
+      ...c,
+      scenarios: c.scenarios.map((s, idx) => (idx === i ? { ...s, ...patch } : s)),
+    }));
+  }
+
+  function addScenario() {
+    setComparison((c) => ({ ...c, scenarios: [...c.scenarios, { ...EMPTY_SCENARIO }] }));
+  }
+
+  function removeScenario(i: number) {
+    setComparison((c) => ({ ...c, scenarios: c.scenarios.filter((_, idx) => idx !== i) }));
+  }
+
   async function handleSubmit() {
     setMessage(null);
     if (!clientId) {
@@ -98,7 +119,11 @@ function MortgageReportsForm() {
       const res = await fetch(editId ? `/api/mortgage-reports/${editId}` : "/api/mortgage-reports", {
         method: editId ? "PATCH" : "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ clientId: Number(clientId), mortgageData: data }),
+        body: JSON.stringify({
+          clientId: Number(clientId),
+          mortgageData: data,
+          comparisonData: comparison.scenarios.length > 0 ? comparison : null,
+        }),
       });
       const json = await res.json();
       if (!res.ok) {
@@ -305,6 +330,73 @@ function MortgageReportsForm() {
 
       <div className="quickadd" style={{ marginTop: 14 }}>
         <button type="button" className="qa-btn" onClick={addTrack}>הוסף מסלול <span className="plus">+</span></button>
+      </div>
+
+      <div className="section-title">
+        השוואה לשוק (אופציונלי)
+        <span className="idx">{comparison.scenarios.length} תרחישים</span>
+      </div>
+      <p className="log-empty" style={{ padding: "0 0 10px" }}>
+        מדוח השוואת תמהילים (למשל SMARTNPV) — נתונים מצטברים בלבד, בלי לפרט אילו מסלולים משתנים בכל תרחיש.
+      </p>
+
+      <div className="panel wide" style={{ marginBottom: 14 }}>
+        <div className="row">
+          <span className="k">תאריך ההשוואה</span>
+          <input
+            type="text"
+            placeholder="DD/MM/YYYY"
+            value={comparison.asOfDate ?? ""}
+            onChange={(e) => setComparison((c) => ({ ...c, asOfDate: e.target.value || null }))}
+          />
+        </div>
+        <div className="row">
+          <span className="k">הערה (מוצגת בעדינות בדוח)</span>
+          <input
+            type="text"
+            value={comparison.note ?? ""}
+            onChange={(e) => setComparison((c) => ({ ...c, note: e.target.value || null }))}
+          />
+        </div>
+      </div>
+
+      <div className="panels">
+        {comparison.scenarios.map((s, i) => (
+          <div className="panel" key={i}>
+            <div className="panel-head">
+              תרחיש {i + 1}
+              <button type="button" className="edit" onClick={() => removeScenario(i)}>הסר ✕</button>
+            </div>
+            <div className="row">
+              <span className="k">תווית</span>
+              <input type="text" placeholder="המשכנתה הנוכחית / משכנתה חדשה, היום / מיחזור אפשרי" value={s.label} onChange={(e) => updateScenario(i, { label: e.target.value })} />
+            </div>
+            <div className="row">
+              <span className="k">החזר ראשון</span>
+              <input type="number" value={s.firstPayment ?? ""} onChange={(e) => updateScenario(i, { firstPayment: numOrNull(e.target.value) })} />
+            </div>
+            <div className="row">
+              <span className="k">תשלומי ריבית והצמדה, סה&quot;כ</span>
+              <input type="number" value={s.totalInterestAndLinkage ?? ""} onChange={(e) => updateScenario(i, { totalInterestAndLinkage: numOrNull(e.target.value) })} />
+            </div>
+            <div className="row">
+              <span className="k">עלות כוללת לתקופה</span>
+              <input type="number" value={s.totalCost ?? ""} onChange={(e) => updateScenario(i, { totalCost: numOrNull(e.target.value) })} />
+            </div>
+            <div className="row">
+              <span className="k">שת&quot;פ (%)</span>
+              <input type="number" step="0.01" value={s.irr ?? ""} onChange={(e) => updateScenario(i, { irr: numOrNull(e.target.value) })} />
+            </div>
+            <div className="row">
+              <span className="k">הפרש לעומת המצב הנוכחי</span>
+              <input type="number" value={s.savingsVsCurrent ?? ""} onChange={(e) => updateScenario(i, { savingsVsCurrent: numOrNull(e.target.value) })} />
+            </div>
+          </div>
+        ))}
+      </div>
+
+      <div className="quickadd" style={{ marginTop: 14 }}>
+        <button type="button" className="qa-btn" onClick={addScenario}>הוסף תרחיש <span className="plus">+</span></button>
       </div>
 
       <div className="deal-form" style={{ marginTop: 22 }}>
