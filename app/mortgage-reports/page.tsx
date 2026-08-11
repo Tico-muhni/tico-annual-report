@@ -237,23 +237,23 @@ function MortgageReportsForm() {
           <div className="panel-head">סה&quot;כ (אופציונלי — אפשר להשאיר ריק ולחשב מהמסלולים בהמשך)</div>
           <div className="row">
             <span className="k">סה&quot;כ אושר מראש</span>
-            <input type="number" value={data.totalApprovedAmount ?? ""} onChange={(e) => setData((d) => ({ ...d, totalApprovedAmount: numOrNull(e.target.value) }))} />
+            <input type="text" inputMode="decimal" value={data.totalApprovedAmount ?? ""} onChange={(e) => setData((d) => ({ ...d, totalApprovedAmount: numOrNull(e.target.value) }))} />
           </div>
           <div className="row">
             <span className="k">סה&quot;כ נמשך בפועל</span>
-            <input type="number" value={data.totalActualAmount ?? ""} onChange={(e) => setData((d) => ({ ...d, totalActualAmount: numOrNull(e.target.value) }))} />
+            <input type="text" inputMode="decimal" value={data.totalActualAmount ?? ""} onChange={(e) => setData((d) => ({ ...d, totalActualAmount: numOrNull(e.target.value) }))} />
           </div>
           <div className="row">
             <span className="k">יתרת קרן נוכחית</span>
-            <input type="number" value={data.totalCurrentBalance ?? ""} onChange={(e) => setData((d) => ({ ...d, totalCurrentBalance: numOrNull(e.target.value) }))} />
+            <input type="text" inputMode="decimal" value={data.totalCurrentBalance ?? ""} onChange={(e) => setData((d) => ({ ...d, totalCurrentBalance: numOrNull(e.target.value) }))} />
           </div>
           <div className="row">
             <span className="k">החזר חודשי, אושר מראש</span>
-            <input type="number" value={data.totalApprovedMonthlyPayment ?? ""} onChange={(e) => setData((d) => ({ ...d, totalApprovedMonthlyPayment: numOrNull(e.target.value) }))} />
+            <input type="text" inputMode="decimal" value={data.totalApprovedMonthlyPayment ?? ""} onChange={(e) => setData((d) => ({ ...d, totalApprovedMonthlyPayment: numOrNull(e.target.value) }))} />
           </div>
           <div className="row">
             <span className="k">החזר חודשי נוכחי</span>
-            <input type="number" value={data.totalCurrentMonthlyPayment ?? ""} onChange={(e) => setData((d) => ({ ...d, totalCurrentMonthlyPayment: numOrNull(e.target.value) }))} />
+            <input type="text" inputMode="decimal" value={data.totalCurrentMonthlyPayment ?? ""} onChange={(e) => setData((d) => ({ ...d, totalCurrentMonthlyPayment: numOrNull(e.target.value) }))} />
           </div>
         </div>
       </div>
@@ -298,35 +298,35 @@ function MortgageReportsForm() {
             </div>
             <div className="row">
               <span className="k">סכום, אושר מראש</span>
-              <input type="number" value={t.approvedAmount ?? ""} onChange={(e) => updateTrack(i, { approvedAmount: numOrNull(e.target.value) })} />
+              <input type="text" inputMode="decimal" value={t.approvedAmount ?? ""} onChange={(e) => updateTrack(i, { approvedAmount: numOrNull(e.target.value) })} />
             </div>
             <div className="row">
               <span className="k">ריבית, אושרה מראש</span>
-              <input type="number" step="0.01" value={t.approvedRateAdjusted ?? ""} onChange={(e) => updateTrack(i, { approvedRateAdjusted: numOrNull(e.target.value) })} />
+              <input type="text" inputMode="decimal" step="0.01" value={t.approvedRateAdjusted ?? ""} onChange={(e) => updateTrack(i, { approvedRateAdjusted: numOrNull(e.target.value) })} />
             </div>
             <div className="row">
               <span className="k">תקופה (חודשים), אושרה</span>
-              <input type="number" value={t.approvedPeriodMonths ?? ""} onChange={(e) => updateTrack(i, { approvedPeriodMonths: numOrNull(e.target.value) })} />
+              <input type="text" inputMode="decimal" value={t.approvedPeriodMonths ?? ""} onChange={(e) => updateTrack(i, { approvedPeriodMonths: numOrNull(e.target.value) })} />
             </div>
             <div className="row">
               <span className="k">סכום בפועל</span>
-              <input type="number" value={t.actualAmount ?? ""} onChange={(e) => updateTrack(i, { actualAmount: numOrNull(e.target.value) })} />
+              <input type="text" inputMode="decimal" value={t.actualAmount ?? ""} onChange={(e) => updateTrack(i, { actualAmount: numOrNull(e.target.value) })} />
             </div>
             <div className="row">
               <span className="k">ריבית בפועל</span>
-              <input type="number" step="0.01" value={t.actualRateAdjusted ?? ""} onChange={(e) => updateTrack(i, { actualRateAdjusted: numOrNull(e.target.value) })} />
+              <input type="text" inputMode="decimal" step="0.01" value={t.actualRateAdjusted ?? ""} onChange={(e) => updateTrack(i, { actualRateAdjusted: numOrNull(e.target.value) })} />
             </div>
             <div className="row">
               <span className="k">תקופה (חודשים), בפועל</span>
-              <input type="number" value={t.actualPeriodMonths ?? ""} onChange={(e) => updateTrack(i, { actualPeriodMonths: numOrNull(e.target.value) })} />
+              <input type="text" inputMode="decimal" value={t.actualPeriodMonths ?? ""} onChange={(e) => updateTrack(i, { actualPeriodMonths: numOrNull(e.target.value) })} />
             </div>
             <div className="row">
               <span className="k">יתרת קרן נוכחית</span>
-              <input type="number" value={t.currentPrincipalBalance ?? ""} onChange={(e) => updateTrack(i, { currentPrincipalBalance: numOrNull(e.target.value) })} />
+              <input type="text" inputMode="decimal" value={t.currentPrincipalBalance ?? ""} onChange={(e) => updateTrack(i, { currentPrincipalBalance: numOrNull(e.target.value) })} />
             </div>
             <div className="row">
               <span className="k">החזר חודשי נוכחי</span>
-              <input type="number" value={t.currentMonthlyPayment ?? ""} onChange={(e) => updateTrack(i, { currentMonthlyPayment: numOrNull(e.target.value) })} />
+              <input type="text" inputMode="decimal" value={t.currentMonthlyPayment ?? ""} onChange={(e) => updateTrack(i, { currentMonthlyPayment: numOrNull(e.target.value) })} />
             </div>
             <div className="row">
               <span className="k">תאריך שינוי ריבית קרוב</span>
@@ -334,7 +334,7 @@ function MortgageReportsForm() {
             </div>
             <div className="row">
               <span className="k">תדירות שינוי ריבית (חודשים)</span>
-              <input type="number" value={t.rateChangeFrequencyMonths ?? ""} onChange={(e) => updateTrack(i, { rateChangeFrequencyMonths: numOrNull(e.target.value) })} />
+              <input type="text" inputMode="decimal" value={t.rateChangeFrequencyMonths ?? ""} onChange={(e) => updateTrack(i, { rateChangeFrequencyMonths: numOrNull(e.target.value) })} />
             </div>
           </div>
         ))}
@@ -385,23 +385,23 @@ function MortgageReportsForm() {
             </div>
             <div className="row">
               <span className="k">החזר ראשון</span>
-              <input type="number" value={s.firstPayment ?? ""} onChange={(e) => updateScenario(i, { firstPayment: numOrNull(e.target.value) })} />
+              <input type="text" inputMode="decimal" value={s.firstPayment ?? ""} onChange={(e) => updateScenario(i, { firstPayment: numOrNull(e.target.value) })} />
             </div>
             <div className="row">
               <span className="k">תשלומי ריבית והצמדה, סה&quot;כ</span>
-              <input type="number" value={s.totalInterestAndLinkage ?? ""} onChange={(e) => updateScenario(i, { totalInterestAndLinkage: numOrNull(e.target.value) })} />
+              <input type="text" inputMode="decimal" value={s.totalInterestAndLinkage ?? ""} onChange={(e) => updateScenario(i, { totalInterestAndLinkage: numOrNull(e.target.value) })} />
             </div>
             <div className="row">
               <span className="k">עלות כוללת לתקופה</span>
-              <input type="number" value={s.totalCost ?? ""} onChange={(e) => updateScenario(i, { totalCost: numOrNull(e.target.value) })} />
+              <input type="text" inputMode="decimal" value={s.totalCost ?? ""} onChange={(e) => updateScenario(i, { totalCost: numOrNull(e.target.value) })} />
             </div>
             <div className="row">
               <span className="k">שת&quot;פ (%)</span>
-              <input type="number" step="0.01" value={s.irr ?? ""} onChange={(e) => updateScenario(i, { irr: numOrNull(e.target.value) })} />
+              <input type="text" inputMode="decimal" step="0.01" value={s.irr ?? ""} onChange={(e) => updateScenario(i, { irr: numOrNull(e.target.value) })} />
             </div>
             <div className="row">
               <span className="k">הפרש לעומת המצב הנוכחי</span>
-              <input type="number" value={s.savingsVsCurrent ?? ""} onChange={(e) => updateScenario(i, { savingsVsCurrent: numOrNull(e.target.value) })} />
+              <input type="text" inputMode="decimal" value={s.savingsVsCurrent ?? ""} onChange={(e) => updateScenario(i, { savingsVsCurrent: numOrNull(e.target.value) })} />
             </div>
           </div>
         ))}
