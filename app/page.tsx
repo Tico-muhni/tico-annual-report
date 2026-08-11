@@ -1,15 +1,17 @@
 "use client";
 
 import { useEffect, useState, FormEvent } from "react";
-import type { ClientRow } from "@/lib/schema";
+import type { ClientRow, MortgageReportRow } from "@/lib/schema";
 
 export default function HomePage() {
   const [clientList, setClientList] = useState<ClientRow[]>([]);
+  const [reportList, setReportList] = useState<MortgageReportRow[]>([]);
   const [formOpen, setFormOpen] = useState(false);
   const [name, setName] = useState("");
   const [phone, setPhone] = useState("");
   const [email, setEmail] = useState("");
   const [saving, setSaving] = useState(false);
+  const [deletingId, setDeletingId] = useState<number | null>(null);
 
   function loadClients() {
     fetch("/api/clients")
@@ -18,8 +20,16 @@ export default function HomePage() {
       .catch(() => setClientList([]));
   }
 
+  function loadReports() {
+    fetch("/api/mortgage-reports")
+      .then((r) => r.json())
+      .then((rows: MortgageReportRow[]) => setReportList(rows))
+      .catch(() => setReportList([]));
+  }
+
   useEffect(() => {
     loadClients();
+    loadReports();
   }, []);
 
   async function submitClient(e: FormEvent) {
@@ -39,6 +49,18 @@ export default function HomePage() {
       loadClients();
     } finally {
       setSaving(false);
+    }
+  }
+
+  async function deleteClient(c: ClientRow) {
+    if (!confirm(`למחוק את ${c.name} וכל הדוחות שלו/שלה?`)) return;
+    setDeletingId(c.id);
+    try {
+      await fetch(`/api/clients/${c.id}`, { method: "DELETE" });
+      loadClients();
+      loadReports();
+    } finally {
+      setDeletingId(null);
     }
   }
 
@@ -90,17 +112,33 @@ export default function HomePage() {
 
       <ul className="client-list">
         {clientList.length === 0 && <li className="log-empty">אין עדיין לקוחות — הוסיפו לקוח למעלה.</li>}
-        {clientList.map((c) => (
-          <li key={c.id}>
-            <div className="cl-main">
-              <span className="cl-name">{c.name}</span>
-            </div>
-            {(c.phone || c.email) && <div className="cl-sub">{[c.phone, c.email].filter(Boolean).join(" · ")}</div>}
-            <div className="cl-actions">
-              <a className="btn ghost" href={`/mortgage-reports?clientId=${c.id}`}>דוח משכנתה חדש</a>
-            </div>
-          </li>
-        ))}
+        {clientList.map((c) => {
+          const clientReports = reportList.filter((r) => r.clientId === c.id);
+          return (
+            <li key={c.id}>
+              <div className="cl-main">
+                <span className="cl-name">{c.name}</span>
+              </div>
+              {(c.phone || c.email) && <div className="cl-sub">{[c.phone, c.email].filter(Boolean).join(" · ")}</div>}
+              {clientReports.length > 0 && (
+                <div className="cl-sub">
+                  דוחות קיימים:{" "}
+                  {clientReports.map((r, i) => (
+                    <a key={r.id} href={`/mortgage-reports/${r.id}`} style={{ marginInlineEnd: 8 }}>
+                      {r.reportDate ?? `#${r.id}`}{i < clientReports.length - 1 ? "," : ""}
+                    </a>
+                  ))}
+                </div>
+              )}
+              <div className="cl-actions">
+                <a className="btn ghost" href={`/mortgage-reports?clientId=${c.id}`}>דוח משכנתה חדש</a>
+                <button className="del" title="מחק לקוח" disabled={deletingId === c.id} onClick={() => deleteClient(c)}>
+                  {deletingId === c.id ? "מוחק…" : "✕ מחק"}
+                </button>
+              </div>
+            </li>
+          );
+        })}
       </ul>
 
       <footer className="credit">TICO FINANCE · אדריכל המשכנתאות</footer>
