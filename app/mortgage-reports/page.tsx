@@ -301,7 +301,7 @@ function MortgageReportsForm() {
               <input type="text" inputMode="decimal" value={t.approvedAmount ?? ""} onChange={(e) => updateTrack(i, { approvedAmount: numOrNull(e.target.value) })} />
             </div>
             <div className="row">
-              <span className="k">ריבית, אושרה מראש</span>
+              <span className="k">ריבית, אושרה מראש / מקורית</span>
               <input type="text" inputMode="decimal" step="0.01" value={t.approvedRateAdjusted ?? ""} onChange={(e) => updateTrack(i, { approvedRateAdjusted: numOrNull(e.target.value) })} />
             </div>
             <div className="row">

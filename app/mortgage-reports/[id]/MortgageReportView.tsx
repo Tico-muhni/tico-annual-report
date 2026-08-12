@@ -196,7 +196,7 @@ export default function MortgageReportView({
       {tracks.length > 0 && (
         <section className={styles.section}>
           <div className={styles.sectionHead}>
-            <h2>הריבית שאושרה מול הריבית שסגרתם</h2>
+            <h2>{data.approvedDate ? "הריבית שאושרה מול הריבית שסגרתם" : "הריבית המקורית מול הריבית היום"}</h2>
             <div className={styles.sectionNote}>לפי מסלול</div>
           </div>
           <div className={styles.tableWrap}>
@@ -205,8 +205,8 @@ export default function MortgageReportView({
                 <tr>
                   <th>מסלול</th>
                   <th className={styles.num}>סכום</th>
-                  <th className={styles.num}>אושר מראש</th>
-                  <th className={styles.num}>בפועל</th>
+                  <th className={styles.num}>{data.approvedDate ? "אושר מראש" : "בתחילת ההלוואה"}</th>
+                  <th className={styles.num}>היום</th>
                   <th className={styles.num}>הפרש</th>
                 </tr>
               </thead>
